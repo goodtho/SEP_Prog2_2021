@@ -61,4 +61,27 @@ public class InputOutput {
         }
         return null;
     }
+
+    //Write by Char
+    private static void writeByChar() {
+        try {
+            String data = "This is the data in the output file";
+
+            // Creates a FileWriter
+            FileWriter file = new FileWriter("output.txt");
+
+            // Creates a BufferedWriter
+            BufferedWriter output = new BufferedWriter(file);
+
+            // Writes the string to the file
+            output.write(data);
+
+            // Closes the writer
+            output.close();
+        }
+
+        catch (Exception e) {
+            e.getStackTrace();
+        }
+    }
 }
