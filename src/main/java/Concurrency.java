@@ -1,11 +1,12 @@
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Concurrency {
-
 
     public void startThread(){
         Thread thread = new Thread(new Runnable() {
@@ -18,19 +19,34 @@ public class Concurrency {
         thread.start();
     }
 
+    // Implementation of a Callable exception with String return
+    public void callableThread() throws ExecutionException, InterruptedException {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        Future<String> future = service.submit(new TaskCallable());
+
+        String result = future.get();
+        service.shutdown();
+    }
+
     public void threadPool(){
         // Create the pool
         ExecutorService service = Executors.newFixedThreadPool(2);
 
         // submit tasks for execution
         for(int i = 0; i < 10; i++)
-            service.execute(new Task());
+            service.execute(new TaskRunnable());
     }
 }
 
-class Task implements Runnable{
+class TaskRunnable implements Runnable{
     public void run(){
         System.out.println("Thread Name: " + Thread.currentThread().getName());
+    }
+}
+
+class TaskCallable implements Callable<String> {
+    public String call(){
+        return "Hallo Welt";
     }
 }
 
