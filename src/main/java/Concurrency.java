@@ -2,6 +2,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Concurrency {
 
@@ -31,4 +32,84 @@ class Task implements Runnable{
     public void run(){
         System.out.println("Thread Name: " + Thread.currentThread().getName());
     }
+}
+
+/**
+ * Multithrading with Conditions and mutual exclusion -> {@link ReentrantLock} and .newCondition
+ */
+class MultiThreadingWithConditions {
+
+    private boolean bridgeOccupied = false;
+    private ReentrantLock mutex = new ReentrantLock();
+    private Condition enterLeft = mutex.newCondition();
+    private Condition enterRight = mutex.newCondition();
+
+    /**
+     * Lock -> await while occupied -> occupy = true -> signal it -> finally unlock
+     */
+    public void enterLeft() {
+        mutex.lock();
+        try {
+            while(bridgeOccupied) {
+                enterLeft.await();
+            }
+            bridgeOccupied = true;
+        } catch (InterruptedException e) {
+            System.err.println("Interrupt: " + e.getMessage());
+        } finally {
+            mutex.unlock();
+        }
+    }
+
+    /**
+     * Lock
+     * -> occupy = false (cause leaving now)
+     * -> checks if there is someone on the right with mutex.hasWaiters(enterRight)
+     *      only use this if someone is a favourite! here Right goes first once left is gone.
+     *      else just signal it without checking
+     * -> signal it
+     * -> finally unlock
+     */
+    public void leaveLeft() {
+        mutex.lock();
+        try {
+            bridgeOccupied = false;
+            if (mutex.hasWaiters(enterRight)) {
+                enterRight.signal();
+            } else {
+                enterLeft.signal();
+            }
+        } finally {
+            mutex.unlock();
+        }
+    }
+
+    public void enterRight() {
+        mutex.lock();
+        try {
+            while(bridgeOccupied) {
+                enterRight.await();
+            }
+            bridgeOccupied = true;
+        } catch (InterruptedException e) {
+            System.err.println("Interrupt: " + e.getMessage());
+        } finally {
+            mutex.unlock();
+        }
+    }
+
+    public void leaveRight() {
+        mutex.lock();
+        try {
+            bridgeOccupied = false;
+            if (mutex.hasWaiters(enterLeft)) {
+                enterLeft.signal();
+            } else {
+                enterRight.signal();
+            }
+        } finally {
+            mutex.unlock();
+        }
+    }
+
 }
