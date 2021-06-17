@@ -112,4 +112,61 @@ class MultiThreadingWithConditions {
         }
     }
 
+    /**
+     * Synchronized
+     */
+    public class Acount {
+        private int balance = 0;
+
+        /**
+         * The whole method is executed mutually excluded
+         */
+        public synchronized void transferAmount(int amount) {
+            this.balance += amount;
+        }
+
+        /**
+         * Code in the marked block {} is executed mutually excluded
+         */
+        public void transferAmount2(int amount) {
+            synchronized (this) {
+                this.balance += amount;
+            }
+        }
+    }
+
+    /**
+     * Consumer & Producer (Synchronized)
+     */
+    public class SyncMonitor {
+        private boolean condition = false;
+
+        //called by consumer
+        public synchronized void waitForCondition() {
+            while(!condition) {
+                try{
+                    wait();
+                }catch (InterruptedException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            condition = false;
+            //wake up producer
+            notifyAll();
+        }
+
+        public synchronized void setCondition() {
+            while(condition) {
+                try {
+                    wait();
+                }catch (InterruptedException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            condition = true;
+            //wake up consumer
+            notifyAll();
+        }
+    }
+
 }
