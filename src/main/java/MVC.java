@@ -23,7 +23,7 @@ public class MVC {
         }
     }
 
-    public class Controller() {
+    public class Controller {
         private Model model;
         private View view;
 
