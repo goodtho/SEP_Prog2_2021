@@ -37,4 +37,14 @@ public class ErrorHandling {
             }
         } while (!succes && attempts<maxAttempts);
     }
+
+
+    /**
+     * How to write an individual Exception
+     */
+    static class InvdividualExceptionHowTo extends Exception {
+        public InvdividualExceptionHowTo(String message) {
+            super(message);
+        }
+    }
 }
