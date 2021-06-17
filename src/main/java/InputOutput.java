@@ -27,7 +27,7 @@ public class InputOutput {
     private final Path tempFile;
     private static final Logger log = Logger.getLogger(InputOutput.class.getCanonicalName());
 
-    //Creates 2 files: temp and actualfile. tempfile is to write and actualfile is to read.
+    //Creates 2 files: temp and actualFile. tempfile is to write and actualFile is to read.
     public InputOutput(String filepath) throws IOException {
         try {
             this.actualFile = Path.of(filepath).normalize();
@@ -42,6 +42,7 @@ public class InputOutput {
             throw new IOException("Error: File not generated.", e);
         }
     }
+
 /*
     public void insert(Picture picture) {
         try(BufferedReader in = Files.newBufferedReader(actualFile, CHARSET);
